@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Schedule Gas&amp;Oil</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="welcome_faculty_textview">Choose your institution</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="weclome_group_textview">Choose your group</string>
+    <string name="title_activity_welcome">Schedule Gas&amp;Oil</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_chooseFaculty">Choose faculty</string>
+    <string name="title_chooseGroup">Choose group</string>
+</resources>
