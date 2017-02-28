@@ -8,10 +8,8 @@ import java.io.Serializable;
 
 public class ScheduleItem implements Serializable {
     private String day;
-    private Integer dayNum;
     private String lesson;
     private String week;
-    private Integer weekParity;
     private String subgroup;
     private String lessonType;
     private String discipline;
@@ -24,14 +22,6 @@ public class ScheduleItem implements Serializable {
 
     public void setDay(String day) {
         this.day = day;
-    }
-
-    public Integer getDayNum() {
-        return dayNum;
-    }
-
-    public void setDayNum(Integer dayNum) {
-        this.dayNum = dayNum;
     }
 
     public String getLesson() {
@@ -48,14 +38,6 @@ public class ScheduleItem implements Serializable {
 
     public void setWeek(String week) {
         this.week = week;
-    }
-
-    public Integer getWeekParity() {
-        return weekParity;
-    }
-
-    public void setWeekParity(Integer weekParity) {
-        this.weekParity = weekParity;
     }
 
     public String getSubgroup() {
@@ -102,10 +84,8 @@ public class ScheduleItem implements Serializable {
     public String toString() {
         return "ScheduleItem{" +
                 "day='" + day + '\'' +
-                ", dayNum=" + dayNum +
                 ", lesson='" + lesson + '\'' +
                 ", week='" + week + '\'' +
-                ", weekParity=" + weekParity +
                 ", subgroup='" + subgroup + '\'' +
                 ", lessonType='" + lessonType + '\'' +
                 ", discipline='" + discipline + '\'' +

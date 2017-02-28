@@ -43,11 +43,11 @@ public class MainActivity extends AppCompatActivity
 
 //            Log.d("HERE!", "Received items are:\n" + faculty.toString() + "\n" + group.toString());
 
-//            mConnectionManager.requestSchedulePage(faculty, group);
+            mConnectionManager.requestSchedulePage(faculty, group);
 
-            IntentFilter assFilter = new IntentFilter("ass");
-            assFilter.addCategory(Intent.CATEGORY_DEFAULT);
-            registerReceiver(mReceiver, assFilter);
+            IntentFilter scheduleFilter = new IntentFilter(ConnectionManager.ACTION_RETURN_SCHEDULE);
+            scheduleFilter.addCategory(Intent.CATEGORY_DEFAULT);
+            registerReceiver(mReceiver, scheduleFilter);
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

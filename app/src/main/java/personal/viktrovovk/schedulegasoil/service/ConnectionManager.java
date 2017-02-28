@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import personal.viktrovovk.schedulegasoil.model.ScheduleItem;
 import personal.viktrovovk.schedulegasoil.model.SelectorItem;
 
 /**
@@ -25,7 +26,8 @@ import personal.viktrovovk.schedulegasoil.model.SelectorItem;
 
 public class ConnectionManager extends IntentService {
     public static String ACTION_RETURN_FACULTIES = "facultiesReturned",
-            ACTION_RETURN_GROUPS = "groupsReturned";
+            ACTION_RETURN_GROUPS = "groupsReturned",
+            ACTION_RETURN_SCHEDULE = "scheduleReturned";
     public static String HOME_LINK = "http://rozklad.nung.edu.ua/index.php",
             TAG_LOG = "QueryService";
     public static final int SELECTOR_TYPE_FACULTY = 1,
@@ -91,7 +93,29 @@ public class ConnectionManager extends IntentService {
     }
 
     public void requestSchedulePage(SelectorItem faculty, SelectorItem group) {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, HOME_LINK.trim(), response -> {
+            Intent serviceIntent = new Intent(mContext, this.getClass());
+            String decodedResponse = null;
+            try {
+                decodedResponse = new String(response.getBytes("iso-8859-1"), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            serviceIntent.setData(Uri.parse(decodedResponse)).putExtra("type", "schedule");
+            mContext.startService(serviceIntent);
+        }, error -> {
 
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("faculty_id", faculty.getId().toString().trim());
+                params.put("group_id", group.getId().toString().trim());
+                return params;
+            }
+        };
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(3000, 3, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        requestQueue.add(stringRequest);
     }
 
     @Override
@@ -113,6 +137,13 @@ public class ConnectionManager extends IntentService {
                     "<option value=\"0\">Група<\\/option>([\\s\\S]*?)<\\/select>");
             response.setAction(ACTION_RETURN_GROUPS);
             response.putExtra("groups", selectorItems);
+            response.addCategory((Intent.CATEGORY_DEFAULT));
+
+            sendBroadcast(response);
+        } else if (type.equals("schedule")) {
+            ArrayList<ScheduleItem> scheduleItems = Parser.parseSchedule(dataString);
+            response.setAction(ACTION_RETURN_SCHEDULE);
+            response.putExtra("schedule", scheduleItems);
             response.addCategory((Intent.CATEGORY_DEFAULT));
 
             sendBroadcast(response);
