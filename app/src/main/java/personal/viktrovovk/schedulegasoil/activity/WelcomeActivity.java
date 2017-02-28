@@ -183,7 +183,7 @@ public class WelcomeActivity extends AppCompatActivity {
                             prefsEditor.commit();
 
 
-                            Intent intent = new Intent(getActivity(), MainActivity.class);
+                            Intent intent = new Intent(getActivity(), ScheduleActivity.class);
                             intent.putExtra("faculty", mSelectedGroup);
                             intent.putExtra("group", selectedGroup);
 

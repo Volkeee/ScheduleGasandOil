@@ -4,6 +4,11 @@
     <string name="preference_key_users_faculty">personal.viktorvovk.schedulegasoil.USERS_FACULTY</string>
     <string name="preference_key_users_group">personal.viktorvovk.schedulegasoil.USERS_GROUP</string>
 
+    <string name="tab_title_monday">Mon.</string>
+    <string name="tab_title_tuesday">Tue.</string>
+    <string name="tab_title_wednesday">Wed.</string>
+    <string name="tab_title_thursday">Thu.</string>
+    <string name="tab_title_friday">Fri.</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -16,4 +21,6 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_chooseFaculty">Choose faculty</string>
     <string name="title_chooseGroup">Choose group</string>
+    <string name="title_activity_schedule">ScheduleActivity</string>
+    <string name="action_settings">Settings</string>
 </resources>

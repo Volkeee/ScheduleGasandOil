@@ -38,7 +38,7 @@ public class LauncherActivity extends Activity {
             Log.d("Saved info loaded", "Saved faculty is \"" + faculty.getName() + "with id " + faculty.getId().toString()
                     + "\" and saved group is \"" + group.getName() + "\" wtih id " + group.getId().toString());
 
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, ScheduleActivity.class);
             intent.putExtra("faculty", faculty);
             intent.putExtra("group", group);
 
