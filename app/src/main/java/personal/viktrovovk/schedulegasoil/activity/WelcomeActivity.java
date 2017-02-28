@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -25,6 +26,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.google.gson.Gson;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +41,8 @@ import personal.viktrovovk.schedulegasoil.tools.RecycleTouchListener;
 import personal.viktrovovk.schedulegasoil.views.NonSwipeableViewPager;
 
 public class WelcomeActivity extends AppCompatActivity {
-    public Toolbar mToolbar;
     public static SelectorItem mSelectedGroup;
+    public Toolbar mToolbar;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -86,28 +89,6 @@ public class WelcomeActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_welcome, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -145,7 +126,6 @@ public class WelcomeActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_welcome, container, false);
-            IntentFilter selectorFilter;
             mList = new ArrayList<>();
             mReceiver = new SelectorsItemsReceiver();
             mRecyclerView = (RecyclerView) rootView.findViewById(R.id.selector_recycler_view);
@@ -187,11 +167,28 @@ public class WelcomeActivity extends AppCompatActivity {
                         selectorGroupsFilter.addCategory(Intent.CATEGORY_DEFAULT);
 
                         getActivity().registerReceiver(mReceiver, selectorGroupsFilter);
-                        mRecyclerView.addOnItemTouchListener(new RecycleTouchListener(getContext(), mRecyclerView, new ClickListener() {
-                            @Override
-                            public void onClick(View view, int position) {
+                        mRecyclerView.addOnItemTouchListener(new RecycleTouchListener(getContext(), mRecyclerView, (view, position) -> {
+                            SelectorItem selectedGroup = ((SelectorsRecyclerAdapter) mRecyclerView.getAdapter()).getItem(position);
 
-                            }
+                            SharedPreferences mPrefs = getActivity().getSharedPreferences(getString(R.string.application_preference_key), MODE_PRIVATE);
+                            SharedPreferences.Editor prefsEditor = mPrefs.edit();
+
+                            Gson gson  = new Gson();
+                            String jsonFaculty = gson.toJson(mSelectedGroup);
+                            String jsonGroup = gson.toJson(selectedGroup);
+
+                            prefsEditor.putString(getString(R.string.preference_key_users_faculty), jsonFaculty);
+                            prefsEditor.putString(getString(R.string.preference_key_users_group), jsonGroup);
+
+                            prefsEditor.commit();
+
+
+                            Intent intent = new Intent(getActivity(), MainActivity.class);
+                            intent.putExtra("faculty", mSelectedGroup);
+                            intent.putExtra("group", selectedGroup);
+
+                            startActivity(intent);
+                            getActivity().finish();
                         }));
                     } else
                         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.title_chooseGroup));

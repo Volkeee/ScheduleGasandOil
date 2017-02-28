@@ -8,11 +8,11 @@ import java.io.Serializable;
 
 public class SelectorItem implements Serializable{
     private Integer id;
-    private String institution;
+    private String name;
 
-    public SelectorItem(Integer id, String institution) {
+    public SelectorItem(Integer id, String name) {
         this.id = id;
-        this.institution = institution;
+        this.name = name;
     }
 
     public Integer getId() {
@@ -23,11 +23,19 @@ public class SelectorItem implements Serializable{
         this.id = id;
     }
 
-    public String getInstitution() {
-        return institution;
+    public String getName() {
+        return name;
     }
 
-    public void setInstitution(String institution) {
-        this.institution = institution;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "SelectorItem{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

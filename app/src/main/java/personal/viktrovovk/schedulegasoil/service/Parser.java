@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import personal.viktrovovk.schedulegasoil.model.ScheduleItem;
 import personal.viktrovovk.schedulegasoil.model.SelectorItem;
 
 /**
@@ -19,6 +20,9 @@ public class Parser {
 //    <option value="0">Група<\/option>([\s\S]*?)<\/select>
 //    value="([0-9]+)">(.*?)<\/option>
 
+//    (<td>(..*?)<\/td>)<\/tr>
+//    <tr  id=".*">\s+<td>(..*?)<\/td>\s+<td>(..*?)<\/td>\s+<td>(..*?)<\/td>\s+<td>(..*?)<\/td>\s+<td>(..*?)<\/td>\s+<td>(..*?)<\/td>\s+<td>(..*?)<\/td>\s+<td>(..*?)<\/td>
+//    <tr  id="day2">\s+<td>(..*?)<\/td>
     public static ArrayList<SelectorItem> parseSelector(String pageString, String tagStartEndRegex) {
         String itemRegex = "value=\"([0-9]+)\"\\s+>(.*?)<\\/option>";
         ArrayList<SelectorItem> items = new ArrayList<>();
@@ -43,24 +47,19 @@ public class Parser {
         return items;
     }
 
-   /* public static ArrayList<SelectorItem> parseGroupsSelector(String pageString) {
-        ArrayList<SelectorItem> items = new ArrayList<>();
-        Pattern groupsSelectorPattern = Pattern.compile("<option value=\"0\">Група<\\/option>([\\s\\S]*?)<\\/select>");
-        Pattern groupsSelectorItemPattern = Pattern.compile("value=\"([0-9]+)\">(.*?)<\\/option>");
+   public static ArrayList<ScheduleItem> parseSchedule(String pageString) {
+       String itemRegex = "<tr  id=\".*\">\\s+<td>(..*?)<\\/td>\\s+<td>(..*?)<\\/td>\\s+<td>(..*?)<\\/td>\\s+<td>(..*?)<\\/td>\\s+<td>(..*?)<\\/td>\\s+<td>(..*?)<\\/td>\\s+<td>(..*?)<\\/td>\\s+<td>(..*?)<\\/td>";
+       ArrayList<ScheduleItem> items = new ArrayList<>();
 
-        Matcher groupsSelectorMatcher = groupsSelectorPattern.matcher(pageString);
-        if (groupsSelectorMatcher.find()) {
-            String groupSelectorHTML = groupsSelectorMatcher.group(1);
+       Pattern schedulePattern = Pattern.compile(itemRegex);
 
-            Matcher groupsItemMatcher = groupsSelectorItemPattern.matcher(groupSelectorHTML);
+       Matcher scheduleMatcher = schedulePattern.matcher(pageString);
+           while (!scheduleMatcher.hitEnd()) {
+               if (scheduleMatcher.find()) {
+//                   Log.d();
+               }
+       }
 
-            while(!groupsItemMatcher.hitEnd()) {
-                if(groupsItemMatcher.hitEnd()) {
-                    items.add(new SelectorItem(Integer.parseInt()))
-                }
-            }
-        }
-
-        return items;
-    }*/
+       return items;
+   }
 }

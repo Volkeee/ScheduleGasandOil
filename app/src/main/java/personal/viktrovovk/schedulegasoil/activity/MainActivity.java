@@ -6,19 +6,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-
-import java.util.ArrayList;
 
 import personal.viktrovovk.schedulegasoil.R;
 import personal.viktrovovk.schedulegasoil.model.SelectorItem;
@@ -38,11 +36,20 @@ public class MainActivity extends AppCompatActivity
         mTextView = (TextView) findViewById(R.id.textView);
         mReceiver = new Receiver();
 
-        IntentFilter assFilter = new IntentFilter("ass");
-        assFilter.addCategory(Intent.CATEGORY_DEFAULT);
-        registerReceiver(mReceiver, assFilter);
+        if (getIntent() != null) {
+            Intent receivedIntent = getIntent();
+            SelectorItem faculty = (SelectorItem) receivedIntent.getSerializableExtra("faculty");
+            SelectorItem group = (SelectorItem) receivedIntent.getSerializableExtra("group");
 
-        mConnectionManager.requestFacultiesSelector();
+//            Log.d("HERE!", "Received items are:\n" + faculty.toString() + "\n" + group.toString());
+
+//            mConnectionManager.requestSchedulePage(faculty, group);
+
+            IntentFilter assFilter = new IntentFilter("ass");
+            assFilter.addCategory(Intent.CATEGORY_DEFAULT);
+            registerReceiver(mReceiver, assFilter);
+        }
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -85,8 +92,10 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_change_group) {
+            Intent intent = new Intent(this, WelcomeActivity.class);
+            startActivity(intent);
+            this.finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -122,9 +131,7 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public void onReceive(Context context, Intent intent) {
-//            mTextView.setText(intent.getStringExtra("ass"));
 
-            ArrayList<SelectorItem> faculties = (ArrayList<SelectorItem>) intent.getSerializableExtra("ass");
             try {
                 unregisterReceiver(mReceiver);
             } catch (IllegalArgumentException e) {

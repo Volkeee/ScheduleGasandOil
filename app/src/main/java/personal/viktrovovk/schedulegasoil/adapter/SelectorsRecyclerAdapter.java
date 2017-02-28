@@ -2,7 +2,6 @@ package personal.viktrovovk.schedulegasoil.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 
 import personal.viktrovovk.schedulegasoil.R;
 import personal.viktrovovk.schedulegasoil.model.SelectorItem;
-import personal.viktrovovk.schedulegasoil.tools.RecycleTouchListener;
 
 /**
  * Created by Viktor on 25/02/2017.
@@ -37,7 +35,7 @@ public class SelectorsRecyclerAdapter extends RecyclerView.Adapter<SelectorsRecy
     public void onBindViewHolder(ViewHolder holder, int position) {
         SelectorItem selectorItem = mItems.get(position);
 
-        holder.selectorItemTextView.setText(selectorItem.getInstitution());
+        holder.selectorItemTextView.setText(selectorItem.getName());
     }
 
     public void swap(ArrayList<SelectorItem> list) {

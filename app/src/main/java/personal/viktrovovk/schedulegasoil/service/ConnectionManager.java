@@ -90,6 +90,10 @@ public class ConnectionManager extends IntentService {
         requestQueue.add(stringRequest);
     }
 
+    public void requestSchedulePage(SelectorItem faculty, SelectorItem group) {
+
+    }
+
     @Override
     protected void onHandleIntent(Intent intent) {
         String type = intent.getStringExtra("type");
