@@ -8,13 +8,13 @@ import java.io.Serializable;
 
 public class ScheduleItem implements Serializable {
     private String day;
-    private String lesson;
+    private String lessonOrder;
     private String week;
     private String subgroup;
     private String lessonType;
     private String discipline;
     private String lecturer;
-    private String classroom;
+    private String auditory;
 
     public String getDay() {
         return day;
@@ -24,12 +24,12 @@ public class ScheduleItem implements Serializable {
         this.day = day;
     }
 
-    public String getLesson() {
-        return lesson;
+    public String getLessonOrder() {
+        return lessonOrder;
     }
 
-    public void setLesson(String lesson) {
-        this.lesson = lesson;
+    public void setLessonOrder(String lessonOrder) {
+        this.lessonOrder = lessonOrder;
     }
 
     public String getWeek() {
@@ -72,25 +72,25 @@ public class ScheduleItem implements Serializable {
         this.lecturer = lecturer;
     }
 
-    public String getClassroom() {
-        return classroom;
+    public String getAuditory() {
+        return auditory;
     }
 
-    public void setClassroom(String classroom) {
-        this.classroom = classroom;
+    public void setAuditory(String auditory) {
+        this.auditory = auditory;
     }
 
     @Override
     public String toString() {
         return "ScheduleItem{" +
                 "day='" + day + '\'' +
-                ", lesson='" + lesson + '\'' +
+                ", lessonOrder='" + lessonOrder + '\'' +
                 ", week='" + week + '\'' +
                 ", subgroup='" + subgroup + '\'' +
                 ", lessonType='" + lessonType + '\'' +
                 ", discipline='" + discipline + '\'' +
                 ", lecturer='" + lecturer + '\'' +
-                ", classroom='" + classroom + '\'' +
+                ", auditory='" + auditory + '\'' +
                 '}';
     }
 }

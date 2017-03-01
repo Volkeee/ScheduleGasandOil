@@ -10,6 +10,13 @@
     <string name="tab_title_thursday">Thu.</string>
     <string name="tab_title_friday">Fri.</string>
 
+    <string name="schedule_item_auditory">Aud. %1s</string>
+    <string name="schedule_item_number">%1s</string>
+    <string name="schedule_item_discipline">%1s</string>
+    <string name="schedule_item_subgroup">%1s subgroup</string>
+    <!--<string name="schedule_item_">Aud. %1s</string>-->
+    <!--<string name="schedule_item_">Aud. %1s</string>-->
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 

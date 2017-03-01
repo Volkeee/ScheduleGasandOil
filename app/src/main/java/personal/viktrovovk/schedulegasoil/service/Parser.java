@@ -58,13 +58,13 @@ public class Parser {
             if (scheduleMatcher.find()) {
                 ScheduleItem scheduleItem = new ScheduleItem();
                 scheduleItem.setDay(scheduleMatcher.group(1).trim());
-                scheduleItem.setLesson(scheduleMatcher.group(2).trim());
+                scheduleItem.setLessonOrder(scheduleMatcher.group(2).trim());
                 scheduleItem.setWeek(scheduleMatcher.group(3).trim());
                 scheduleItem.setSubgroup(scheduleMatcher.group(4).trim());
                 scheduleItem.setLessonType(scheduleMatcher.group(5).trim());
                 scheduleItem.setDiscipline(scheduleMatcher.group(6).trim());
                 scheduleItem.setLecturer(scheduleMatcher.group(7).trim());
-                scheduleItem.setClassroom(scheduleMatcher.group(8).trim());
+                scheduleItem.setAuditory(scheduleMatcher.group(8).trim());
                 items.add(scheduleItem);
             }
         }

@@ -60,10 +60,10 @@ public class SelectorsRecyclerAdapter extends RecyclerView.Adapter<SelectorsRecy
 
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        public Context mContext;
+        Context mContext;
         TextView selectorItemTextView;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
 
             selectorItemTextView = (TextView) itemView.findViewById(R.id.selector_item_textview);

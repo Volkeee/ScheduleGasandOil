@@ -23,16 +23,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.TextView;
+import java.util.ArrayList;
 
 import personal.viktrovovk.schedulegasoil.R;
-import personal.viktrovovk.schedulegasoil.activity.MainActivity;
+import personal.viktrovovk.schedulegasoil.adapter.ScheduleRecyclerAdapter;
+import personal.viktrovovk.schedulegasoil.model.ScheduleItem;
 import personal.viktrovovk.schedulegasoil.model.SelectorItem;
 import personal.viktrovovk.schedulegasoil.service.ConnectionManager;
 
 public class ScheduleActivity extends AppCompatActivity {
     public ConnectionManager mConnectionManager;
     private ScheduleReceiver mReceiver;
+    public TabLayout mParityTabs;
+    public PlaceholderFragment currentFragment;
+
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -81,16 +85,35 @@ public class ScheduleActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOffscreenPageLimit(5);
+        mViewPager.getCurrentItem();
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+        mParityTabs = (TabLayout) findViewById(R.id.tabs_parity);
+        mParityTabs.setTabGravity(TabLayout.GRAVITY_FILL);
+        mParityTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                Log.d("HERE!", Integer.toString(tab.getPosition()));
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+        fab.setOnClickListener(view -> Snackbar
+                .make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show());
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -119,11 +142,12 @@ public class ScheduleActivity extends AppCompatActivity {
      */
     public static class PlaceholderFragment extends Fragment {
         public RecyclerView mRecyclerView;
+        public Integer mFragmentsDay;
         /**
          * The fragment argument representing the section number for this
          * fragment.
          */
-        private static final String ARG_SECTION_NUMBER = "section_number";
+        private static final String ARG_SECTIONS_DAY = "section_number";
 
         public PlaceholderFragment() {
         }
@@ -135,7 +159,7 @@ public class ScheduleActivity extends AppCompatActivity {
         public static PlaceholderFragment newInstance(int sectionNumber) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            args.putInt(ARG_SECTIONS_DAY, sectionNumber);
             fragment.setArguments(args);
             return fragment;
         }
@@ -145,7 +169,13 @@ public class ScheduleActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_schedule, container, false);
             mRecyclerView = (RecyclerView) rootView.findViewById(R.id.schedule_recyclerview);
+            mFragmentsDay = getArguments().getInt(ARG_SECTIONS_DAY);
+
             return rootView;
+        }
+
+        public  void swapListContent(ArrayList<ScheduleItem> list) {
+            ((ScheduleRecyclerAdapter) mRecyclerView.getAdapter()).swap(list);
         }
     }
 
@@ -163,7 +193,8 @@ public class ScheduleActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            PlaceholderFragment fragment = PlaceholderFragment.newInstance(position);
+            return fragment;
         }
 
         @Override
@@ -194,6 +225,8 @@ public class ScheduleActivity extends AppCompatActivity {
     private class ScheduleReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            @SuppressWarnings("unchecked")
+            ArrayList<ScheduleItem> schedule = (ArrayList<ScheduleItem>) intent.getSerializableExtra("");
 
             try {
                 unregisterReceiver(mReceiver);
