@@ -20,17 +20,13 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 import personal.viktrovovk.schedulegasoil.R;
 import personal.viktrovovk.schedulegasoil.adapter.SelectorsRecyclerAdapter;
@@ -38,7 +34,7 @@ import personal.viktrovovk.schedulegasoil.model.SelectorItem;
 import personal.viktrovovk.schedulegasoil.service.ConnectionManager;
 import personal.viktrovovk.schedulegasoil.tools.ClickListener;
 import personal.viktrovovk.schedulegasoil.tools.RecycleTouchListener;
-import personal.viktrovovk.schedulegasoil.views.NonSwipeableViewPager;
+import personal.viktrovovk.schedulegasoil.view.NonSwipeableViewPager;
 
 public class WelcomeActivity extends AppCompatActivity {
     public static SelectorItem mSelectedGroup;
@@ -150,13 +146,10 @@ public class WelcomeActivity extends AppCompatActivity {
 
                     getActivity().registerReceiver(mReceiver, selectorFacultiesFilter);
 
-                    mRecyclerView.addOnItemTouchListener(new RecycleTouchListener(getContext(), mRecyclerView, new ClickListener() {
-                        @Override
-                        public void onClick(View view, int position) {
-                            mSelectedGroup = mSelectorsRecyclerAdapter.getItem(position);
-                            mSectionsPagerAdapter.notifyDataSetChanged();
-                            mViewPager.setCurrentItem(1);
-                        }
+                    mRecyclerView.addOnItemTouchListener(new RecycleTouchListener(getContext(), mRecyclerView, (view, position) -> {
+                        mSelectedGroup = mSelectorsRecyclerAdapter.getItem(position);
+                        mSectionsPagerAdapter.notifyDataSetChanged();
+                        mViewPager.setCurrentItem(1);
                     }));
                     ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.title_chooseFaculty));
                     break;

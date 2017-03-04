@@ -1,6 +1,7 @@
 package personal.viktrovovk.schedulegasoil.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -36,7 +37,7 @@ public class LauncherActivity extends Activity {
             SelectorItem group = gson.fromJson(jsonGroup, SelectorItem.class);
 
             Log.d("Saved info loaded", "Saved faculty is \"" + faculty.getName() + "with id " + faculty.getId().toString()
-                    + "\" and saved group is \"" + group.getName() + "\" wtih id " + group.getId().toString());
+                    + "\" and saved group is \"" + group.getName() + "\" with id " + group.getId().toString());
 
             Intent intent = new Intent(this, ScheduleActivity.class);
             intent.putExtra("faculty", faculty);

@@ -1,4 +1,4 @@
-package personal.viktrovovk.schedulegasoil.views;
+package personal.viktrovovk.schedulegasoil.view;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;

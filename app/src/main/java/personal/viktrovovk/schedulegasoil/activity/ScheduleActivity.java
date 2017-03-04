@@ -4,24 +4,27 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.design.widget.TabLayout;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -30,22 +33,16 @@ import personal.viktrovovk.schedulegasoil.adapter.ScheduleRecyclerAdapter;
 import personal.viktrovovk.schedulegasoil.model.ScheduleItem;
 import personal.viktrovovk.schedulegasoil.model.SelectorItem;
 import personal.viktrovovk.schedulegasoil.service.ConnectionManager;
+import personal.viktrovovk.schedulegasoil.tools.RecycleTouchListener;
 
 public class ScheduleActivity extends AppCompatActivity {
+    public static ArrayList<ScheduleItem> mScheduleList;
     public ConnectionManager mConnectionManager;
+    public Integer mCurrentFragmentIndex = 0;
+    public static Integer mSelectedWeek = 1;
     private ScheduleReceiver mReceiver;
     public TabLayout mParityTabs;
-    public PlaceholderFragment currentFragment;
 
-
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
@@ -58,15 +55,32 @@ public class ScheduleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule);
 
+        mScheduleList = new ArrayList<>();
         mConnectionManager = new ConnectionManager(this);
         mReceiver = new ScheduleReceiver();
 
-        if (getIntent() != null) {
+        if (getIntent().getSerializableExtra("group") != null) {
             Intent receivedIntent = getIntent();
             SelectorItem faculty = (SelectorItem) receivedIntent.getSerializableExtra("faculty");
             SelectorItem group = (SelectorItem) receivedIntent.getSerializableExtra("group");
 
 //            Log.d("HERE!", "Received items are:\n" + faculty.toString() + "\n" + group.toString());
+
+            mConnectionManager.requestSchedulePage(faculty, group);
+
+            IntentFilter scheduleFilter = new IntentFilter(ConnectionManager.ACTION_RETURN_SCHEDULE);
+            scheduleFilter.addCategory(Intent.CATEGORY_DEFAULT);
+            registerReceiver(mReceiver, scheduleFilter);
+        } else {
+            SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.application_preference_key), MODE_PRIVATE);
+            Gson gson = new Gson();
+            String jsonFaculty = sharedPref.getString(getString(R.string.preference_key_users_faculty), null);
+            String jsonGroup = sharedPref.getString(getString(R.string.preference_key_users_group), null);
+            SelectorItem faculty = gson.fromJson(jsonFaculty, SelectorItem.class);
+            SelectorItem group = gson.fromJson(jsonGroup, SelectorItem.class);
+
+            Log.d("Saved info loaded", "Saved faculty is \"" + faculty.getName() + "with id " + faculty.getId().toString()
+                    + "\" and saved group is \"" + group.getName() + "\" with id " + group.getId().toString());
 
             mConnectionManager.requestSchedulePage(faculty, group);
 
@@ -85,7 +99,6 @@ public class ScheduleActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOffscreenPageLimit(5);
-        mViewPager.getCurrentItem();
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -95,7 +108,12 @@ public class ScheduleActivity extends AppCompatActivity {
         mParityTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                Log.d("HERE!", Integer.toString(tab.getPosition()));
+                mSelectedWeek = tab.getPosition();
+                PlaceholderFragment currentFragment = mSectionsPagerAdapter.getCreatedFragment(mCurrentFragmentIndex);
+                ((ScheduleRecyclerAdapter) currentFragment
+                        .mRecyclerView.getAdapter())
+                        .applyFilter(mScheduleList, currentFragment.mFragmentsDay, mSelectedWeek);
+
             }
 
             @Override
@@ -105,6 +123,22 @@ public class ScheduleActivity extends AppCompatActivity {
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+
+            @Override
+            public void onPageSelected(int position) {
+                mCurrentFragmentIndex = position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
 
             }
         });
@@ -131,6 +165,8 @@ public class ScheduleActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, WelcomeActivity.class);
+            startActivity(intent);
             return true;
         }
 
@@ -141,8 +177,10 @@ public class ScheduleActivity extends AppCompatActivity {
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment {
-        public RecyclerView mRecyclerView;
-        public Integer mFragmentsDay;
+        private ScheduleRecyclerAdapter mAdapterFragment;
+        private ArrayList<ScheduleItem> mFragmentsList;
+        private RecyclerView mRecyclerView;
+        private Integer mFragmentsDay;
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -168,25 +206,47 @@ public class ScheduleActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_schedule, container, false);
+            mFragmentsList = new ArrayList<>();
+            mAdapterFragment = new ScheduleRecyclerAdapter(mFragmentsList);
             mRecyclerView = (RecyclerView) rootView.findViewById(R.id.schedule_recyclerview);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false));
+            mRecyclerView.setAdapter(mAdapterFragment);
+            mRecyclerView.addOnItemTouchListener(new RecycleTouchListener(getContext(), mRecyclerView, (view, position) -> {
+                Intent intent = new Intent(this.getContext(), TaskListActivity.class);
+                intent.putExtra("scheduleItem", ((ScheduleRecyclerAdapter)mRecyclerView.getAdapter()).getItem(position));
+
+                startActivity(intent);
+            }));
+
             mFragmentsDay = getArguments().getInt(ARG_SECTIONS_DAY);
 
+            if (!mScheduleList.isEmpty()) {
+                swapListContentforDay(mScheduleList);
+            }
             return rootView;
         }
 
-        public  void swapListContent(ArrayList<ScheduleItem> list) {
-            ((ScheduleRecyclerAdapter) mRecyclerView.getAdapter()).swap(list);
+        public void swapListContentforDay(ArrayList<ScheduleItem> list) {
+            ((ScheduleRecyclerAdapter) mRecyclerView.getAdapter()).applyFilter(list, mFragmentsDay);
         }
     }
 
     /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+     * A {@link FragmentStatePagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
+        ArrayList<PlaceholderFragment> mCreatedFragments;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+            mCreatedFragments = new ArrayList<>();
+        }
+
+        @Override
+        public void notifyDataSetChanged() {
+            mCreatedFragments.clear();
+            super.notifyDataSetChanged();
         }
 
         @Override
@@ -194,7 +254,13 @@ public class ScheduleActivity extends AppCompatActivity {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             PlaceholderFragment fragment = PlaceholderFragment.newInstance(position);
+            mCreatedFragments.add(fragment);
+
             return fragment;
+        }
+
+        public PlaceholderFragment getCreatedFragment(int position) {
+            return mCreatedFragments.get(position);
         }
 
         @Override
@@ -203,6 +269,10 @@ public class ScheduleActivity extends AppCompatActivity {
             return 5;
         }
 
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
 
         @Override
         public CharSequence getPageTitle(int position) {
@@ -224,10 +294,12 @@ public class ScheduleActivity extends AppCompatActivity {
 
     private class ScheduleReceiver extends BroadcastReceiver {
         @Override
+        @SuppressWarnings("unchecked")
         public void onReceive(Context context, Intent intent) {
-            @SuppressWarnings("unchecked")
-            ArrayList<ScheduleItem> schedule = (ArrayList<ScheduleItem>) intent.getSerializableExtra("");
+            mScheduleList = (ArrayList<ScheduleItem>) intent.getSerializableExtra("schedule");
 
+            mSectionsPagerAdapter.notifyDataSetChanged();
+            Log.i("Receiver", "Response received");
             try {
                 unregisterReceiver(mReceiver);
             } catch (IllegalArgumentException e) {

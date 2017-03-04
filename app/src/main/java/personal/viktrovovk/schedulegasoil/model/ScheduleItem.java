@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 public class ScheduleItem implements Serializable {
     private String day;
+    private Integer dayIndex;
     private String lessonOrder;
     private String week;
     private String subgroup;
@@ -21,7 +22,29 @@ public class ScheduleItem implements Serializable {
     }
 
     public void setDay(String day) {
+        switch (day) {
+            case "Пн":
+                dayIndex = 0;
+                break;
+            case "Вт":
+                dayIndex = 1;
+                break;
+            case "Ср":
+                dayIndex = 2;
+                break;
+            case "Чт":
+                dayIndex = 3;
+                break;
+            case "Пт":
+                dayIndex = 4;
+                break;
+        }
+
         this.day = day;
+    }
+
+    public Integer getDayIndex() {
+        return dayIndex;
     }
 
     public String getLessonOrder() {
